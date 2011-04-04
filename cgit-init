@@ -1,0 +1,32 @@
+#!/bin/bash
+
+BASE=$(dirname `readlink -f $0`)
+
+REPO_BASE=$(readlink -m "${CGIT_REPO:-/root/.cgit}")
+REPO_DIR="$REPO_BASE/.git"
+TREE=${CGIT_TREE:-"/"}
+
+export GIT_DIR=$REPO_DIR
+export GIT_WORK_TREE=$TREE
+
+if [ -e "$REPO_DIR" ];
+then
+    echo "Repository dir not empty, aborting."
+    exit 1
+fi
+
+mkdir -p "$REPO_BASE"
+
+git init --template="$BASE/template"
+git config --add alias.store-meta "!`git rev-parse --git-dir`/hooks/setgitperms.perl -r"
+git config --add alias.apply-meta "!`git rev-parse --git-dir`/hooks/setgitperms.perl -w"
+git config --add alias.smeta "!`git rev-parse --git-dir`/hooks/setgitperms.perl -r"
+git config --add alias.ameta "!`git rev-parse --git-dir`/hooks/setgitperms.perl -w"
+
+git store-meta
+# git store-meta
+git commit -F-<<EOF
+Initial commit.
+
+Initialize the config repo and add the meta-tracking file.
+EOF

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+REPO_BASE=$(readlink -m "${CGIT_REPO:-/root/.cgit}")
+REPO_DIR="$REPO_BASE/.git"
+TREE=${CGIT_TREE:-"/"}
+
+export GIT_DIR=$REPO_DIR
+export GIT_WORK_TREE=$TREE
+
+exec git "$@"
